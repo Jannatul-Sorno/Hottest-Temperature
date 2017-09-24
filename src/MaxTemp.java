@@ -19,15 +19,35 @@ public class MaxTemp {
 		}
 		return largestSoFar;
 	}
-	public void testHottestHourInDay()
+	public CSVRecord hottestInManyDays()
 	{
-		FileResource fr = new FileResource();
-		CSVRecord largest = hottestHourInDay(fr.getCSVParser());
-		System.out.println(largest.get("TemperatureF"));
+		DirectoryResource dr = new DirectoryResource();
+		CSVRecord largestSoFar = null;
+		for(File f: dr.selectedFiles())
+		{
+			FileResource fr = new FileResource(f);
+			CSVRecord current = hottestHourInDay(fr.getCSVParser());
+			if(largestSoFar == null)
+				largestSoFar = current;
+			else
+			{
+				double currentTemp = Double.parseDouble(current.get("TemperatureF"));
+				double largestTemp = Double.parseDouble(largestSoFar.get("TemperatureF"));
+				if(currentTemp > largestTemp)
+					largestSoFar = current;
+			}
+			
+		}
+		return largestSoFar;
+	}
+	public void testHottestInManyDays()
+	{
+		CSVRecord largest = hottestInManyDays();
+		System.out.println("Hottest Temperature was " + largest.get("TemperatureF") + " at " + largest.get("DateUTC"));
 	}
 	public static void main(String[] args)
 	{
 		MaxTemp c = new MaxTemp();
-		c.testHottestHourInDay();
+		c.testHottestInManyDays();
 	}
 }
